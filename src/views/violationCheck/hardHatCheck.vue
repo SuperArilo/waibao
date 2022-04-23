@@ -219,7 +219,6 @@ export default {
         justify-content: space-between;
         align-items: center;
         padding: 0 32px;
-        min-height: 99px;
         border-bottom: dashed 1px rgb(204, 204, 204);
         .left-input-box
         {
@@ -267,13 +266,11 @@ export default {
     {
         width: 100%;
         height: 88%;
-        min-height: 733px;
         padding: 0 12px;
         .data-function-box
         {
             width: 100%;
             height: 8%;
-            min-height: 58px;
             display: flex;
             justify-content: flex-start;
             align-items: center;
@@ -282,7 +279,6 @@ export default {
         {
             width: 100%;
             height: 5.46%;
-            min-height: 40px;
             display: flex;
             border: solid 1px rgb(204, 204, 204);
             justify-content: space-between;
@@ -343,7 +339,6 @@ export default {
         {
             width: 100%;
             height: 8%;
-            min-height: 43px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
