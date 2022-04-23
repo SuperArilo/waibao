@@ -434,6 +434,7 @@ export default {
                 background-color: #ffffff;
                 margin-bottom: 10px;
                 position: relative;
+                overflow: hidden;
                 .router_animate-enter-active
                 {
                     animation: slideInLeft 0.6s;
