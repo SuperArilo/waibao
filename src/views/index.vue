@@ -39,7 +39,11 @@
                     </div>
                 </div>
                 <div class="right-router-content" ref="routerContent">
-                    <router-view/>
+                    <router-view v-slot="{ Component }" style="position: absolute;">
+                        <transition enter-active-class="animate__animated router_animate-enter-active" leave-active-class="animate__animated router_animate-leave-active">
+                            <component :is="Component" />
+                        </transition>
+                    </router-view>
                 </div>
             </div>
         </div>
@@ -119,6 +123,17 @@ export default {
             systemSubMenuIndex: '',
         }
     },
+    created(){
+        let systemMenuIndex = sessionStorage.getItem('systemMenuIndex')
+        let systemSubMenuIndex = sessionStorage.getItem('systemSubMenuIndex')
+        if(systemMenuIndex !== null){
+            this.systemMenuIndex = parseInt(systemMenuIndex)
+        }
+        if(systemSubMenuIndex !== null){
+            this.systemSubMenuIndex = parseInt(systemSubMenuIndex)
+        }
+        window.addEventListener('resize', this.resetHeight)
+    },
     mounted(){
         $(this.$refs.routerContent).height($(this.$refs.systemRouter).height() - $(this.$refs.routerTitle).height() - 30)
     },
@@ -137,6 +152,8 @@ export default {
                 }
                 
             }
+            sessionStorage.setItem('systemMenuIndex', this.systemMenuIndex)
+            sessionStorage.setItem('systemSubMenuIndex', this.systemSubMenuIndex)
         },
         secondSubMemuFunc(id, path, title){
             this.$router.push('/' + path)
@@ -144,6 +161,7 @@ export default {
                 this.$store.commit('addRouter', {path: path, title: title})
             }
             this.systemSubMenuIndex = id
+            sessionStorage.setItem('systemSubMenuIndex', this.systemSubMenuIndex)
         },
         routerTitleFunc(path){
             this.$router.push('/' + path)
@@ -159,6 +177,12 @@ export default {
                 this.$router.push('/' + routerlist[routeIndex - 1].path)
             }
         },
+        resetHeight(){
+            $(this.$refs.routerContent).height($(this.$refs.systemRouter).height() - $(this.$refs.routerTitle).height() - 30)
+        }
+    },
+    unmounted(){
+        window.removeEventListener('resize', this.resetHeight)
     }
 }
 </script>
@@ -331,6 +355,11 @@ export default {
             }
             .sub-first-menu-active-have-sub-menu
             {
+                .top-show-item
+                {
+                    background-color: rgba(0, 169, 187, 1);
+                    color: #ffffff;
+                }
                 .menu-arrow
                 {
                     transform: rotate(180deg);
@@ -404,6 +433,15 @@ export default {
                 width: 100%;
                 background-color: #ffffff;
                 margin-bottom: 10px;
+                position: relative;
+                .router_animate-enter-active
+                {
+                    animation: slideInLeft 0.6s;
+                }
+                .router_animate-leave-active
+                {
+                    animation: slideOutRight 0.6s;
+                }
             }
         }
     }
