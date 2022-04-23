@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 // 是否为生产环境
 const isProduction = process.env.NODE_ENV !== 'development'
 // 代码压缩
@@ -83,6 +84,13 @@ module.exports = {
                     },
                     sourceMap: false,
                     parallel: true
+                })
+            )
+            config.plugins.push(
+                new webpack.ProvidePlugin({
+                    $:"jquery",
+                    jQuery:"jquery",
+                    "windows.jQuery":"jquery"
                 })
             )
         }
