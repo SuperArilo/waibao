@@ -168,7 +168,6 @@ export default {
                 border-radius: 4px;
                 cursor: pointer;
             }
-            
         }
         ::v-deep(.el-dropdown)
         {

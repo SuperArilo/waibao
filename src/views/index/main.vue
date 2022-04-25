@@ -109,13 +109,13 @@
                     <span class="list-show-title-item">详情</span>
                 </div>
                 <ul class="list-data-content" style="height: 75%">
-                    <li v-for="item in dataList" :key="item.id">
-                        <span style="width: 72px;">{{item.id}}</span>
-                        <span>{{item.camera}}</span>
-                        <span>{{item.time}}</span>
-                        <span>{{item.class}}</span>
-                        <span>{{item.need}}</span>
-                        <span>{{item.infor}}</span>
+                    <li v-for="item in earlyWarningList" :key="item.id">
+                        <span style="width: 72px;">{{item.pushId}}</span>
+                        <span>{{item.pushCameraId}}</span>
+                        <span>{{item.pushTime}}</span>
+                        <span>{{item.pushViolationType}}</span>
+                        <span>{{item.violationDispose}}</span>
+                        <span>详情</span>
                     </li>
                 </ul>
             </div>
@@ -123,6 +123,9 @@
     </div>
 </template>
 <script>
+import { showImages } from 'vue-img-viewr'
+import 'vue-img-viewr/styles/index.css'
+import { systemOverviewWarning } from '@/util/api.js'
 export default {
     data(){
         return{
@@ -239,8 +242,20 @@ export default {
                     need: '带上安全帽',
                     infor:'详情'
                 }
-            ]
+            ],
+            earlyWarningList:[]
         }
+    },
+    created(){
+        systemOverviewWarning({CameraId: 1000}).then(resq => {
+            if(resq.code === 200){
+                this.earlyWarningList = resq.data.list
+            } else {
+                console.log(resq.message)
+            }
+        }).catch(err => {
+            console.log(err)
+        })
     }
 }
 </script>
@@ -418,6 +433,11 @@ export default {
                     white-space: normal;
                     overflow: hidden;
                     font-size: 12px;
+                }
+                span:last-child
+                {
+                    color: #00A9BB;
+                    cursor: pointer;
                 }
             }
         }

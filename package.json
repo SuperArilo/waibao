@@ -14,8 +14,10 @@
     "core-js": "^3.6.5",
     "element-plus": "^2.1.10",
     "jquery": "^3.6.0",
+    "query-string": "^7.1.1",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "vue": "^3.0.0",
+    "vue-img-viewr": "^2.0.8",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
   },
