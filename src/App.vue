@@ -34,7 +34,6 @@ body , html
     min-width: 1400px;
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
 }
 a
 {

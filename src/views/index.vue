@@ -178,6 +178,7 @@ export default {
             }
         },
         resetHeight(){
+            console.log(111)
             $(this.$refs.routerContent).height($(this.$refs.systemRouter).height() - $(this.$refs.routerTitle).height() - 30)
         }
     },
