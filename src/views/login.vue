@@ -73,7 +73,7 @@ export default {
                 this.isLoginWorkNow = false
                 
             }).catch(err => {
-                ElMessage.error(err)
+                ElMessage.error(err.message)
                 this.isLoginWorkNow = false
             })
             
