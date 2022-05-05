@@ -11,11 +11,25 @@ export const systemOverviewWarning = (params) => {
         }
     })
 }
-//根据当前动态id评论
-// export const dynamicCommentSet = (query , dynamicId) => {
-//     return request({
-//         url: '/dynamic/comments/comment/' + dynamicId,
-//         method: 'post',
-//         data: query,
-//     })
-// }
+//登录操作
+export const login = (query) => {
+    return request({
+        url: '/getToken',
+        method: 'post',
+        data: query,
+    })
+}
+//今日行为规范
+export const statisticalToday = () => {
+    return request({
+        url: 'SystemOverviewStatistical',
+        method: 'get',
+    })
+}
+//今日物料盘点差错
+export const materialToday = () => {
+    return request({
+        url: 'SystemOverviewMaterial',
+        method: 'get',
+    })
+}

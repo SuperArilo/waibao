@@ -5,6 +5,7 @@
 </template>
 <script>
 import 'animate.css'
+import '@/assets/fontawesome/css/all.min.css'
 export default {
     created(){
         if(sessionStorage.getItem('routerTitle') !== null){

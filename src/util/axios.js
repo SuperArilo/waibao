@@ -5,22 +5,20 @@ const service = axios.create({
     timeout: 15000
 })
 service.interceptors.request.use(config => {
-    return config
-    // if(localStorage.getItem('token') === null && sessionStorage.getItem('token') === null){
-    //     return config
-    // }
-    // if (localStorage.getItem('token')) {
-    //     config.headers.token = localStorage.getItem('token')
-    //     return config
-    // }
-    // if(sessionStorage.getItem('token')){
-    //     config.headers.token = sessionStorage.getItem('token')
-    //     return config
-    // }
+    if(sessionStorage.getItem('token') === null){
+        return config
+    }
+    if(sessionStorage.getItem('token')){
+        config.headers.token = sessionStorage.getItem('token')
+        return config
+    }
 }, error => {
     return Promise.reject(error.response.data)
 })
 service.interceptors.response.use( response => {
+        if(response.data.code === 401 || response.data.code === 403){
+            sessionStorage.removeItem('token')
+        }
         return Promise.resolve(response.data)
     }, error => {
         if(error.response){

@@ -10,31 +10,73 @@
                 <span class="title">账号登陆</span>
                 <form class="input-box">
                     <label class="sub-input">
-                        <input type="text" placeholder="请输入账号"/>
+                        <input type="text" v-model="userName" placeholder="请输入账号"/>
                     </label>
                     <label class="sub-input">
-                        <input type="password" placeholder="请输入密码" maxlength="16" autocomplete/>
+                        <input type="password" v-model="userPwd" placeholder="请输入密码" maxlength="16" autocomplete/>
                     </label>
                 </form>
                 <div class="find-password">
                     <a href="">忘记密码?</a>
                 </div>
-                <span class="login-button" @click="loginFunction">登陆</span>
+                <div class="login-button" @click="loginFunction">
+                    <span v-if="!isLoginWorkNow">登录</span>
+                    <i v-else class="fas fa-circle-notch fa-spin"/>
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+import { login } from '@/util/api.js'
+import { ElMessage } from 'element-plus'
 export default {
     data(){
         return{
-            logo: require('@/views/image/logo.png')
+            logo: require('@/views/image/logo.png'),
+            userName: '',
+            userPwd: '',
+            isLoginWorkNow: false
         }
+    },
+    created(){
     },
     methods:{
         loginFunction(){
-            sessionStorage.setItem('token', 'test')
-            this.$router.push('/')
+            if(this.isLoginWorkNow) return
+            this.isLoginWorkNow = true
+            if(this.userName === ''){
+                ElMessage.warning('账号不能为空！')
+                this.isLoginWorkNow = false
+                return
+            } else if(this.userPwd === ''){
+                ElMessage.warning('密码不能为空！')
+                this.isLoginWorkNow = false
+                return
+            }
+            let data = new FormData()
+            data.append('usrName', this.userName)
+            data.append('passWord', this.userPwd)
+            login(data).then(resq => {
+                if(resq.code === 200){
+                    if(resq.data.token !== undefined){
+                        sessionStorage.setItem('token', resq.data.token)
+                        this.$router.push('/')
+                    } else {
+                        ElMessage.error('token 获取失败，请联系管理员！')
+                    }
+                    this.userName = ''
+                    this.userPwd = ''
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+                this.isLoginWorkNow = false
+                
+            }).catch(err => {
+                ElMessage.error(err)
+                this.isLoginWorkNow = false
+            })
+            
         }
     }
 }
@@ -152,14 +194,24 @@ export default {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                font-size: 18px;
-                color: #ffffff;
                 background-color: rgba(2, 138, 158, 1);
                 cursor: pointer;
                 margin: 20px 0;
                 border-radius: 4px;
-                letter-spacing: 5px;
+                span
+                {
+                    font-size: 18px;
+                    color: #ffffff;
+                    letter-spacing: 5px;
+                }
+                i
+                {
+                    display: block;
+                    font-size: 24px;
+                    color: #ffffff;
+                }
             }
+            
         }
     }
 }

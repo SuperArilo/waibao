@@ -3,32 +3,32 @@
         <div class="left-box">
             <div class="show-today-standard">
                 <span class="public-title" style="height: 18%">今日人员行为规范</span>
-                <div class="standard-content" style="height: 82%;">
+                <div class="standard-content" style="height: 82%;" v-loading="this.statisticalLiist === ''">
                     <div class="standard-content-sub-item">
                         <div class="left-image"></div>
                         <div class="right-span-content">
-                            <span>7次</span>
+                            <span>{{this.statisticalLiist.total}}次</span>
                             <span>总计</span>
                         </div>
                     </div>
                     <div class="standard-content-sub-item">
                         <div class="left-image"></div>
                         <div class="right-span-content">
-                            <span>7次</span>
+                            <span>{{this.statisticalLiist.dangerZone}}次</span>
                             <span>进入危险区域</span>
                         </div>
                     </div>
                     <div class="standard-content-sub-item">
                         <div class="left-image"></div>
                         <div class="right-span-content">
-                            <span>7次</span>
+                            <span>{{this.statisticalLiist.helmetViolation}}次</span>
                             <span>安全帽违规</span>
                         </div>
                     </div>
                     <div class="standard-content-sub-item">
                         <div class="left-image"></div>
                         <div class="right-span-content">
-                            <span>7次</span>
+                            <span>{{this.statisticalLiist.dressViolation}}次</span>
                             <span>着装违规</span>
                         </div>
                     </div>
@@ -36,13 +36,13 @@
             </div>
             <div class="show-material">
                 <span class="public-title" style="height: 28%">今日物料盘点差错</span>
-                <div class="material-content" style="height: 72%">
+                <div class="material-content" style="height: 72%" v-loading="this.materialList === ''">
                     <div class="material-sub-item">
                         <div class="left-image">
                             <img src=""/>
                         </div>
                         <div class="right-span-content">
-                            <span>1次</span>
+                            <span>{{this.materialList.total}}次</span>
                             <span>总计</span>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                             <img src=""/>
                         </div>
                         <div class="right-span-content">
-                            <span>1次</span>
+                            <span>{{this.materialList.InventoryInconsistency}}次</span>
                             <span>盘点不一致</span>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                     <span class="list-show-title-item">处理办法</span>
                     <span class="list-show-title-item">详情</span>
                 </div>
-                <ul class="list-data-content" style="height: 75%">
+                <ul class="list-data-content" style="height: 75%" v-loading="this.earlyWarningList.length === 0">
                     <li v-for="item in earlyWarningList" :key="item.id">
                         <span style="width: 72px;">{{item.pushId}}</span>
                         <span>{{item.pushCameraId}}</span>
@@ -125,7 +125,8 @@
 <script>
 import { showImages } from 'vue-img-viewr'
 import 'vue-img-viewr/styles/index.css'
-import { systemOverviewWarning } from '@/util/api.js'
+import { systemOverviewWarning , statisticalToday , materialToday } from '@/util/api.js'
+import { ElMessage } from 'element-plus'
 export default {
     data(){
         return{
@@ -243,19 +244,51 @@ export default {
                     infor:'详情'
                 }
             ],
+            //今日行为规范
+            materialList: '',
+            statisticalLiist: '',
+            //预警结果
             earlyWarningList:[]
         }
     },
     created(){
-        systemOverviewWarning({CameraId: 1000}).then(resq => {
-            if(resq.code === 200){
-                this.earlyWarningList = resq.data.list
-            } else {
-                console.log(resq.message)
-            }
-        }).catch(err => {
-            console.log(err)
-        })
+        this.getStatistical()
+        this.getMaterial()
+        this.getEarlyWarning()
+    },
+    methods:{
+        getMaterial(){
+            materialToday().then(resq => {
+                if(resq.code === 200){
+                    this.materialList = resq.data
+                }
+            }).catch(err => {
+                ElMessage.error(err)
+            })
+        },
+        getStatistical(){
+            statisticalToday().then(resq => {
+                if(resq.code === 200){
+                    this.statisticalLiist = resq.data
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+            }).catch(err => {
+                ElMessage.error(err)
+            })
+        },
+        getEarlyWarning(){
+            systemOverviewWarning({CameraId: 1000}).then(resq => {
+                if(resq.code === 200){
+                    this.earlyWarningList = resq.data.list
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+            }).catch(err => {
+                ElMessage.error(err)
+            })
+        },
+        
     }
 }
 </script>
