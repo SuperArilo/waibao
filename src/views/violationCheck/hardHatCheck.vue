@@ -4,20 +4,23 @@
             <div class="left-input-box">
                 <label class="item-input-box">
                     <span>时间:</span>
-                    <input type="date"/>
+                    <input type="date" v-model="beforeDate"/>
                 </label>
                 <label class="item-input-box">
                     <span>一</span>
                 </label>
                 <label class="item-input-box">
-                    <input type="date"/>
+                    <input type="date" v-model="afterDate"/>
                 </label>
                 <label class="item-input-box">
                     <span>摄像头:</span>
-                    <input type="text"/>
+                    <input type="number" v-model="cameraId"/>
                 </label>
-                <span class="item-button">查询</span>
-                <span class="item-button">重置</span>
+                <div class="item-button" @click="getHelmetViolation">
+                    <span v-if="!searchWorkNow">查询</span>
+                    <i v-else class="fas fa-circle-notch fa-spin"/>
+                </div>
+                <span class="item-button" @click="resetButton">重置</span>
             </div>
             <div></div>
         </div>
@@ -33,177 +36,104 @@
                 <span>处理办法</span>
                 <span>详情</span>
             </div>
-            <ul class="data-show-list">
+            <ul class="data-show-list" v-loading="(this.searchWorkNow === true && this.dataList.length === 0) || (this.changePageWorkNow === true)">
                 <li v-for="item in dataList" :key="item.id">
-                    <span style="width: 128px;">{{item.id}}</span>
-                    <span>{{item.camera}}</span>
-                    <span>{{item.time}}</span>
-                    <span>{{item.class}}</span>
-                    <span>{{item.need}}</span>
-                    <span>详情</span>
+                    <span style="width: 128px;">{{item.pushId}}</span>
+                    <span>{{item.pushCameraId}}</span>
+                    <span>{{item.pushTime}}</span>
+                    <span>{{item.pushViolationType}}</span>
+                    <span>{{item.violationDispose}}</span>
+                    <span @click="showImage(item.violationImg)">详情</span>
                 </li>
             </ul>
             <div class="data-change-page-box">
-                <el-pagination small background layout="total, sizes, prev, pager, next, jumper" :total="1000" />
+                <el-pagination small background layout="total, sizes, prev, pager, next, jumper" :total="dataTotal" :v-model="pageSize" @current-change="changePage" @size-change="changeSize" v-if="this.dataList.length !== 0"/>
             </div>
         </div>
     </div>
 </template>
 <script>
+import { showImages } from 'vue-img-viewr'
+import 'vue-img-viewr/styles/index.css'
+import { helmetViolation } from '@/util/api.js'
+import { ElMessage } from 'element-plus'
 export default {
     data(){
         return{
-            dataList:[
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
-                },
-                {
-                    id: 0,
-                    camera: '1111',
-                    time: '2022-4-23',
-                    class: '未佩戴安全头盔',
-                    need: '佩戴头盔'
+            beforeDate: '',
+            afterDate: '',
+            cameraId: null,
+            pageNumber: 1,
+            pageSize: 10,
+            dataTotal: 10,
+            searchWorkNow: false,
+            changePageWorkNow: false,
+            dataList:[]
+        }
+    },
+    created(){
+    },
+    methods:{
+        getHelmetViolation(){
+            if(this.searchWorkNow) return
+            this.searchWorkNow = true
+            if(this.beforeDat === '' || this.afterDate === ''){
+                ElMessage.warning('请选择时间！')
+                this.searchWorkNow = false
+                return
+            }
+            if(this.cameraId === null){
+                ElMessage.warning('请输入摄像头ID！')
+                this.searchWorkNow = false
+                return
+            }
+            helmetViolation({starTime: this.beforeDate, overTime: this.afterDate, cameraId: this.cameraId, pageNumber: this.pageNumber, pageSize: this.pageSize}).then(resq => {
+                if(resq.code === 200){
+                    this.dataList = resq.data.list
+                    this.dataTotal = resq.data.total
+                } else {
+                    ElMessage.warning(resq.message)
                 }
-            ]
+                this.searchWorkNow = false
+            }).catch(err => {
+                ElMessage.error(err.message)
+                this.searchWorkNow = false
+            })
+        },
+        changePage(e){
+            this.pageNumber = e
+            this.getDataList()
+        },
+        changeSize(e){
+            this.pageSize = e
+            this.getDataList()
+        },
+        getDataList(){
+            if(this.changePageWorkNow) return
+            this.changePageWorkNow = true
+            helmetViolation({starTime: this.beforeDate, overTime: this.afterDate, cameraId: this.cameraId, pageNumber: this.pageNumber, pageSize: this.pageSize}).then(resq => {
+                if(resq.code === 200){
+                    this.dataList = resq.data.list
+                    this.dataTotal = resq.data.total
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+                this.changePageWorkNow = false
+            }).catch(err => {
+                ElMessage.error(err.message)
+                this.changePageWorkNow = false
+            })
+        },
+        showImage(baseImage){
+            showImages({urls: ['data:image/png;base64,' + baseImage], index: 0, onClose: () => {}})
+        },
+        resetButton(){
+            this.beforeDate = ''
+            this.afterDate = ''
+            this.cameraId = null
         }
     }
+
 }
 </script>
 <style lang="scss" scoped>

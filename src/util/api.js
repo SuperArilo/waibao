@@ -33,3 +33,28 @@ export const materialToday = () => {
         method: 'get',
     })
 }
+//七日违规
+export const weekStatistical = () => {
+    return request({
+        url: 'SystemOverviewWeekInconsistency',
+        method: 'get',
+    })
+}
+//总违规清单
+export const totalList = () => {
+    return request({
+        url: 'SystemOverviewTotal',
+        method: 'get',
+    })
+}
+//安全帽违规查询
+export const helmetViolation = (params) => {
+    return request({
+        url: 'helmetViolation',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}

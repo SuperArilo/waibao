@@ -59,6 +59,8 @@
             </div>
             <div class="show-seven-day">
                 <span class="public-title" style="height: 18%">最近七日违规趋势</span>
+                <div class="echars-box" ref="echartsRef">
+                </div>
             </div>
             <div class="show-list">
                 <span class="public-title" style="height: 14%">总违规清单</span>
@@ -70,14 +72,14 @@
                     <span class="list-show-title-item">处理办法</span>
                     <span class="list-show-title-item">详情</span>
                 </div>
-                <ul class="list-data-content">
-                    <li v-for="item in dataList" :key="item.id">
-                        <span style="width: 72px;">{{item.id}}</span>
-                        <span>{{item.camera}}</span>
-                        <span>{{item.time}}</span>
-                        <span>{{item.class}}</span>
-                        <span>{{item.need}}</span>
-                        <span>{{item.infor}}</span>
+                <ul class="list-data-content" v-loading="totalList.length === 0">
+                    <li v-for="item in totalList" :key="item.id">
+                        <span style="width: 72px;">{{item.pushId}}</span>
+                        <span>{{item.pushCameraId}}</span>
+                        <span>{{item.pushTime}}</span>
+                        <span>{{item.pushViolationType}}</span>
+                        <span>{{item.violationDispose}}</span>
+                        <span @click="showBigImage(item.violationImg)">详情</span>
                     </li>
                 </ul>
             </div>
@@ -115,7 +117,7 @@
                         <span>{{item.pushTime}}</span>
                         <span>{{item.pushViolationType}}</span>
                         <span>{{item.violationDispose}}</span>
-                        <span>详情</span>
+                        <span @click="showBigImage(item.violationImg)">详情</span>
                     </li>
                 </ul>
             </div>
@@ -125,128 +127,17 @@
 <script>
 import { showImages } from 'vue-img-viewr'
 import 'vue-img-viewr/styles/index.css'
-import { systemOverviewWarning , statisticalToday , materialToday } from '@/util/api.js'
+import { systemOverviewWarning , statisticalToday , materialToday , weekStatistical , totalList } from '@/util/api.js'
 import { ElMessage } from 'element-plus'
+import * as echarts from 'echarts'
 export default {
     data(){
         return{
-            dataList:[
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                },
-                {
-                    id: 0,
-                    camera: 111,
-                    time: 2022-4-23,
-                    class: '不带安全帽',
-                    need: '带上安全帽',
-                    infor:'详情'
-                }
-            ],
             //今日行为规范
             materialList: '',
             statisticalLiist: '',
+            //总违规清单
+            totalList: '',
             //预警结果
             earlyWarningList:[]
         }
@@ -254,16 +145,23 @@ export default {
     created(){
         this.getStatistical()
         this.getMaterial()
+        this.getWeekStatistical()
+        this.getTotalList()
         this.getEarlyWarning()
+    },
+    mounted(){
+
     },
     methods:{
         getMaterial(){
             materialToday().then(resq => {
                 if(resq.code === 200){
                     this.materialList = resq.data
+                } else {
+                    ElMessage.warning(resq.message)
                 }
             }).catch(err => {
-                ElMessage.error(err)
+                ElMessage.error(err.message)
             })
         },
         getStatistical(){
@@ -274,7 +172,68 @@ export default {
                     ElMessage.warning(resq.message)
                 }
             }).catch(err => {
-                ElMessage.error(err)
+                ElMessage.error(err.message)
+            })
+        },
+        getWeekStatistical(){
+            weekStatistical().then(resq => {
+                if(resq.code === 200){
+                    let chars = echarts.init(this.$refs.echartsRef)
+                    chars.setOption({
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: [ '人', '物料']
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: resq.data.date
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [
+                            {
+                                name: '人',
+                                type: 'line',
+                                stack: 'Total',
+                                data: resq.data.people
+                            },
+                            {
+                                name: '物料',
+                                type: 'line',
+                                stack: 'Total',
+                                data: resq.data.material
+                            },
+                        ]
+                    })
+                    window.onresize = function () {
+                        chars.resize()
+                    }
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+            }).catch(err => {
+                ElMessage.error(err.message)
+            })
+        },
+        getTotalList(){
+            totalList().then(resq => {
+                if(resq.code === 200){
+                    this.totalList = resq.data.list
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+            }).catch(err => {
+                ElMessage.error(err.message)
             })
         },
         getEarlyWarning(){
@@ -288,7 +247,9 @@ export default {
                 ElMessage.error(err)
             })
         },
-        
+        showBigImage(baseImage){
+            showImages({urls: ['data:image/png;base64,' + baseImage], index: 0, onClose: () => {}})
+        }
     }
 }
 </script>
@@ -332,7 +293,7 @@ export default {
         flex-wrap: wrap;
         .show-today-standard
         {
-            height: 25%;
+            height: 24%;
             .standard-content
             {
                 width: 100%;
@@ -417,7 +378,12 @@ export default {
         }
         .show-seven-day
         {
-            height: 25%;
+            height: 26%;
+            .echars-box
+            {
+                width: 100%;
+                height: 82%;
+            }
         }
     }
     .left-box .show-list , .right-box .show-list

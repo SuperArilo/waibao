@@ -29,7 +29,7 @@
 </template>
 <script>
 import { login } from '@/util/api.js'
-import { ElMessage } from 'element-plus'
+import { ElMessage , ElMessageBox } from 'element-plus'
 export default {
     data(){
         return{
@@ -61,7 +61,9 @@ export default {
                 if(resq.code === 200){
                     if(resq.data.token !== undefined){
                         sessionStorage.setItem('token', resq.data.token)
-                        this.$router.push('/')
+                        ElMessageBox.alert('登陆成功！', '提示', {confirmButtonText: '确认', callback: () => {
+                            this.$router.push('/')
+                        }})
                     } else {
                         ElMessage.error('token 获取失败，请联系管理员！')
                     }
