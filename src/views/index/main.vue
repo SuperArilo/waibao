@@ -87,17 +87,14 @@
         <div class="right-box">
             <div class="top-video">
                 <span class="public-title" style="height: 11%">实时监控</span>
-                <div class="video-content" style="height: 89%"></div>
+                <div class="video-content" style="height: 89%" v-loading="videosOptions === ''">
+                <videoPlay v-if="videosOptions !== ''" v-bind="videosOptions"/>
+                </div>
             </div>
             <div class="center-menu">
                 <span class="public-title" style="height: 38%">监控列表</span>
                 <div class="videos-list" style="height: 62%">
-                    <span class="videos-list-item">人员安全帽监控</span>
-                    <span class="videos-list-item">人员着装监控</span>
-                    <span class="videos-list-item">人员规范行为监控</span>
-                    <span class="videos-list-item">物料定位监控预警</span>
-                    <span class="videos-list-item">物料盘点监控预警</span>
-                    <span class="videos-list-item">物料仓位监控优化预警</span>
+                    <span class="videos-list-item" v-for="item in videosList" :key="item.id" @click="changeVideo(item.id)">{{item.title}}</span>
                 </div>
             </div>
             <div class="show-list">
@@ -127,16 +124,49 @@
 <script>
 import { showImages } from 'vue-img-viewr'
 import 'vue-img-viewr/styles/index.css'
-import { systemOverviewWarning , statisticalToday , materialToday , weekStatistical , totalList } from '@/util/api.js'
+import { systemOverviewWarning , statisticalToday , materialToday , weekStatistical , mainPageVideos , totalList } from '@/util/api.js'
 import { ElMessage } from 'element-plus'
 import * as echarts from 'echarts'
+import 'vue3-video-play/dist/style.css'
+import { videoPlay } from 'vue3-video-play'
 export default {
+    components: {
+        videoPlay
+    },
     data(){
         return{
             //今日行为规范
             materialList: '',
             statisticalLiist: '',
             //总违规清单
+            //实时监控切换
+            videosOptions : '',
+            videosList:[
+                {
+                    id: 1,
+                    title: '人员安全帽监控'
+                },
+                {
+                    id: 2,
+                    title: '人员着装监控'
+                },
+                {
+                    id: 3,
+                    title: '人员规范行为监控'
+                },
+                {
+                    id: 4,
+                    title: '物料定位监控预警'
+                },
+                {
+                    id: 5,
+                    title: '物料盘点监控预警'
+                },
+                {
+                    id: 6,
+                    title: '物料仓位监控优化预警'
+                }
+            ],
             totalList: '',
             //预警结果
             earlyWarningList:[]
@@ -147,6 +177,7 @@ export default {
         this.getMaterial()
         this.getWeekStatistical()
         this.getTotalList()
+        this.getVideosToday(1)
         this.getEarlyWarning()
     },
     mounted(){
@@ -236,6 +267,40 @@ export default {
                 ElMessage.error(err.message)
             })
         },
+        getVideosToday(cameraId){
+            mainPageVideos({CameraId: cameraId}).then(resq => {
+                if(resq.code === 200){
+                    if(this.videosOptions === ''){
+                        this.videosOptions = {
+                            width: '100%', //播放器高度
+                            height: '100%', //播放器高度
+                            color: "#409eff", //主题色
+                            title: '', //视频名称
+                            src: resq.data.videoPath, //视频源
+                            muted: false, //静音
+                            webFullScreen: false,
+                            speedRate: ["0.75", "1.0", "1.25", "1.5", "2.0"], //播放倍速
+                            autoPlay: false, //自动播放
+                            loop: false, //循环播放
+                            mirror: false, //镜像画面
+                            ligthOff: false,  //关灯模式
+                            volume: 0.3, //默认音量大小
+                            control: true, //是否显示控制
+                            controlBtns:['audioTrack', 'quality', 'speedRate', 'volume', 'setting', 'pip', 'pageFullScreen', 'fullScreen'] //显示所有按钮,
+                        }
+                    } else {
+                        this.videosOptions.src = resq.data.videoPath
+                    }
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+            }).catch(err => {
+                ElMessage.error(err.message)
+            })
+        },
+        changeVideo(id){
+            this.getVideosToday(id)
+        },
         getEarlyWarning(){
             systemOverviewWarning({CameraId: 1000}).then(resq => {
                 if(resq.code === 200){
@@ -247,8 +312,8 @@ export default {
                 ElMessage.error(err)
             })
         },
-        showBigImage(baseImage){
-            showImages({urls: ['data:image/png;base64,' + baseImage], index: 0, onClose: () => {}})
+        showBigImage(image){
+            showImages({urls: [image], index: 0, onClose: () => {}})
         }
     }
 }

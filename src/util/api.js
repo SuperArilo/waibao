@@ -40,6 +40,17 @@ export const weekStatistical = () => {
         method: 'get',
     })
 }
+//获取主页的监控录像
+export const mainPageVideos = (params) => {
+    return request({
+        url: 'SystemOverviewVideo',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
 //总违规清单
 export const totalList = () => {
     return request({
