@@ -69,3 +69,124 @@ export const helmetViolation = (params) => {
         }
     })
 }
+//安全帽违规文件导出
+export const helmetViolationFile = (params) => {
+    return request({
+        url: 'helmetViolationOut',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//着装违规查询
+export const dressViolation = (params) => {
+    return request({
+        url: 'dressViolation',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//着装违规文件导出
+export const dressViolationOut = (params) => {
+    return request({
+        url: 'dressViolationOut',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//区域违规查询
+export const areaViolation = (params) => {
+    return request({
+        url: 'areaViolation',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//区域违规文件导出
+export const areaViolationOut = (params) => {
+    return request({
+        url: 'areaViolationOut',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//异常上下架查询
+export const shelvesViolation = (params) => {
+    return request({
+        url: 'shelvesViolation',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//异常上下架导出
+export const shelvesViolationOut = (params) => {
+    return request({
+        url: 'shelvesViolationOut',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//盘点异常查询
+export const findViolation = (params) => {
+    return request({
+        url: 'findViolation',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//盘点异常导出
+export const findViolationOut = (params) => {
+    return request({
+        url: 'findViolationOut',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//堆场容量优化顶部数据
+export const storageYardCount = (params) => {
+    return request({
+        url: 'storageYardCount',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}
+//堆场容量优化数据列表
+export const storageYardCapacity = (params) => {
+    return request({
+        url: 'storageYardCapacity',
+        method: 'get',
+        params: params,
+        paramsSerializer: params => {
+            return Qs.stringify(params, {arrayFormat: 'repeat'})
+        }
+    })
+}

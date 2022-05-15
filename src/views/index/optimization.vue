@@ -1,33 +1,33 @@
 <template>
     <div class="hard-hat-check">
-        <div class="title-function">
-            <div class="sub-show-stack">
+        <div class="title-function" v-loading="this.topData === ''">
+            <div class="sub-show-stack" v-if="this.topData !== ''">
                 <span class="stack-title">优化前</span>
                 <div class="juti-content">
                     <div class="left-image">
                         <img src=""/>
                     </div>
                     <div class="right-show-stack-data">
-                        <span class="show-now-tips">已用容量: 30% / 可用容量: 70%</span>
+                        <span class="show-now-tips">已用容量: {{this.topData.beforeOptimization.before}}% / 可用容量: {{this.topData.beforeOptimization.after}}%</span>
                         <div class="bar-box">
-                            <div class="true-bar" style="width: 30%"></div>
+                            <div class="true-bar" :style="{width: this.topData.beforeOptimization.before + '%'}"></div>
                         </div>
-                        <span class="show-now-bottom-tips">堆场总容量: 100</span>
+                        <span class="show-now-bottom-tips">堆场总容量: {{this.topData.YardCapacity}}</span>
                     </div>
                 </div>
             </div>
-            <div class="sub-show-stack">
+            <div class="sub-show-stack" v-if="this.topData !== ''">
                 <span class="stack-title">优化后</span>
                 <div class="juti-content">
                     <div class="left-image">
                         <img src=""/>
                     </div>
                     <div class="right-show-stack-data">
-                        <span class="show-now-tips">已用容量: 20% / 可用容量: 80%</span>
+                        <span class="show-now-tips">已用容量: {{this.topData.afterOptimization.before}}% / 可用容量: {{this.topData.afterOptimization.after}}%</span>
                         <div class="bar-box">
-                            <div class="true-bar" style="width: 20%"></div>
+                            <div class="true-bar" :style="{width: this.topData.afterOptimization.before + '%'}"></div>
                         </div>
-                        <span class="show-now-bottom-tips">堆场总容量: 100</span>
+                        <span class="show-now-bottom-tips">堆场总容量: {{this.topData.YardCapacity}}</span>
                     </div>
                 </div>
             </div>
@@ -36,11 +36,11 @@
             <div class="data-function-box">
                 <label class="item-input-box">
                     <span>仓库:</span>
-                    <select>
-                        <option value="">请选择物资运营中心</option>
+                    <select v-model="areaInfo">
+                        <option v-for="item in areaInfoList" :key="item.id" :value="item.value">{{item.title}}</option>
                     </select>
                 </label>
-                <span class="item-button">实时优化</span>
+                <span class="item-button" @click="getStorageYardCapacity">实时优化</span>
             </div>
             <div class="data-show-list-title">
                 <span style="width: 128px">序号</span>
@@ -50,127 +50,112 @@
                 <span>可优化容量</span>
                 <span>建议优化详情</span>
             </div>
-            <ul class="data-show-list">
+            <ul class="data-show-list" v-loading="(this.searchWorkNow === true && this.dataList.length === 0) || (this.changePageWorkNow === true)">
                 <li v-for="item in dataList" :key="item.id">
-                    <span style="width: 128px;">{{item.id}}</span>
-                    <span>{{item.camera}}</span>
-                    <span>{{item.time}}</span>
-                    <span>{{item.class}}</span>
-                    <span>{{item.need}}</span>
-                    <span>详情</span>
+                    <span style="width: 128px;">{{item.pushId}}</span>
+                    <span>{{item.pushArea}}</span>
+                    <span>{{item.pushTime}}</span>
+                    <span>{{item.beforeCapacity}}</span>
+                    <span>{{item.storageCapacity}}</span>
+                    <span @click="showImage(item.imageFinalPath)">详情</span>
                 </li>
             </ul>
             <div class="data-change-page-box">
-                <el-pagination small background layout="total, sizes, prev, pager, next, jumper" :total="1000" />
+                <el-pagination small background layout="total, sizes, prev, pager, next, jumper" :total="dataTotal" :v-model="pageSize" @current-change="changePage" @size-change="changeSize" v-if="this.dataList.length !== 0"/>
             </div>
         </div>
     </div>
 </template>
 <script>
+import { storageYardCapacity , storageYardCount } from '@/util/api.js'
+import { ElMessage } from 'element-plus'
+import { showImages } from 'vue-img-viewr'
+import 'vue-img-viewr/styles/index.css'
 export default {
     data(){
         return{
-            dataList:[
+            topData:'',
+            areaInfoList:[
                 {
                     id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
+                    title: 'A区',
+                    value: 'A区'
                 },
                 {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-                {
-                    id: 0,
-                    camera: '赣北物资运营中心堆场1',
-                    time: '2022-01-12 16:38:26',
-                    class: '50%',
-                    need: '4%'
-                },
-            ]
+                    id: 1,
+                    title: 'B区',
+                    value: 'B区'
+                }
+            ],
+            areaInfo: '',
+            pageNumber: 1,
+            pageSize: 10,
+            dataTotal: 10,
+            searchWorkNow: false,
+            changePageWorkNow: false,
+            dataList:[]
         }
+    },
+    created(){
+        storageYardCount().then(resq => {
+            if(resq.code === 200) {
+                this.topData = resq.data
+            } else {
+                ElMessage.warning(resq.message)
+            }
+        }).catch(err => {
+            ElMessage.error(err.message)
+        })
+    },
+    methods:{
+        getStorageYardCapacity(){
+            if(this.searchWorkNow) return
+            this.searchWorkNow = true
+            if(this.areaInfo === ''){
+                ElMessage.warning('请选择仓库！')
+                this.searchWorkNow = false
+                return
+            }
+            storageYardCapacity({warePath: this.areaInfo, pageNumber: this.pageNumber, pageSize: this.pageSize}).then(resq => {
+                if(resq.code === 200){
+                    this.dataList = resq.data.list
+                    this.dataTotal = resq.data.total
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+                this.searchWorkNow = false
+            }).catch(err => {
+                ElMessage.error(err.message)
+                this.searchWorkNow = false
+            })
+        },
+        changePage(e){
+            this.pageNumber = e
+            this.getDataList()
+        },
+        changeSize(e){
+            this.pageSize = e
+            this.getDataList()
+        },
+        getDataList(){
+            if(this.changePageWorkNow) return
+            this.changePageWorkNow = true
+            storageYardCapacity({warePath: this.areaInfo, pageNumber: this.pageNumber, pageSize: this.pageSize}).then(resq => {
+                if(resq.code === 200){
+                    this.dataList = resq.data.list
+                    this.dataTotal = resq.data.total
+                } else {
+                    ElMessage.warning(resq.message)
+                }
+                this.changePageWorkNow = false
+            }).catch(err => {
+                ElMessage.error(err.message)
+                this.changePageWorkNow = false
+            })
+        },
+        showImage(baseImage){
+            showImages({urls: [baseImage], index: 0, onClose: () => {}})
+        },
     }
 }
 </script>

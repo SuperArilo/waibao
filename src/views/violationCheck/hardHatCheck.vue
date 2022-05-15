@@ -26,7 +26,7 @@
         </div>
         <div class="data-show-content">
             <div class="data-function-box">
-                <span class="item-button">导出</span>
+                <span class="item-button" @click="fileGet()">导出</span>
             </div>
             <div class="data-show-list-title">
                 <span style="width: 128px">序号</span>
@@ -55,7 +55,7 @@
 <script>
 import { showImages } from 'vue-img-viewr'
 import 'vue-img-viewr/styles/index.css'
-import { helmetViolation } from '@/util/api.js'
+import { helmetViolation , helmetViolationFile } from '@/util/api.js'
 import { ElMessage } from 'element-plus'
 export default {
     data(){
@@ -70,8 +70,6 @@ export default {
             changePageWorkNow: false,
             dataList:[]
         }
-    },
-    created(){
     },
     methods:{
         getHelmetViolation(){
@@ -125,12 +123,35 @@ export default {
             })
         },
         showImage(baseImage){
-            showImages({urls: ['data:image/png;base64,' + baseImage], index: 0, onClose: () => {}})
+            showImages({urls: [baseImage], index: 0, onClose: () => {}})
         },
         resetButton(){
             this.beforeDate = ''
             this.afterDate = ''
             this.cameraId = null
+        },
+        fileGet(){
+            if(this.searchWorkNow) return
+            this.searchWorkNow = true
+            if(this.beforeDat === '' || this.afterDate === ''){
+                ElMessage.warning('请选择时间！')
+                this.searchWorkNow = false
+                return
+            }
+            if(this.cameraId === null){
+                ElMessage.warning('请输入摄像头ID！')
+                this.searchWorkNow = false
+                return
+            }
+            helmetViolationFile({starTime: this.beforeDate, overTime: this.afterDate, cameraId: this.cameraId}).then(resq => {
+                if(resq.code === 200){
+                    window.location.href = resq.data.outPath
+                } else {
+                    ElMessage.error(resq.message)
+                }
+            }).catch(err => {
+                ElMessage.error(err.message)
+            })
         }
     }
 
