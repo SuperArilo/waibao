@@ -276,7 +276,7 @@ export default {
                             height: '100%', //播放器高度
                             color: "#409eff", //主题色
                             title: '', //视频名称
-                            src: 'http://' + resq.data.videoPath, //视频源
+                            src: resq.data.videoPath, //视频源
                             muted: false, //静音
                             webFullScreen: false,
                             speedRate: ["0.75", "1.0", "1.25", "1.5", "2.0"], //播放倍速
@@ -289,7 +289,7 @@ export default {
                             controlBtns:['audioTrack', 'quality', 'speedRate', 'volume', 'setting', 'pip', 'pageFullScreen', 'fullScreen'] //显示所有按钮,
                         }
                     } else {
-                        this.videosOptions.src = 'http://' + resq.data.videoPath
+                        this.videosOptions.src = resq.data.videoPath
                     }
                 } else {
                     ElMessage.warning(resq.message)

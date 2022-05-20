@@ -2,10 +2,10 @@
     <div class="violation-check-box">
         <div class="title-function">
             <div class="function-item">
-                <input class="show-file-name-input" type="text" placeholder="未选择文件"/>
+                <input class="show-file-name-input" type="text" placeholder="未选择文件" :value="fileObject.title"/>
                 <span class="upload-button">
                     选择文件
-                    <input class="true-upload" type="file"/>
+                    <input class="true-upload" type="file" @change="getFile"/>
                 </span>
             </div>
             <div class="function-item">
@@ -19,6 +19,9 @@
                     </template>
                 </el-dropdown>
             </div>
+            <div class="function-item">
+                <span class="click-button" @click="distinguishButtom">识别</span>
+            </div>
         </div>
         <div class="data-show-content">
             <div class="data-show-list-title">
@@ -28,70 +31,119 @@
                 <span>识别结果</span>
                 <span>操作</span>
             </div>
-            <ul class="data-show-list">
+            <ul class="data-show-list" v-loading="changePageWorkNow">
                 <li v-for="item in dataList" :key="item.id">
-                    <span style="width: 128px;">{{item.id}}</span>
-                    <span>{{item.time}}</span>
-                    <span>{{item.class}}</span>
-                    <span>{{item.result}}</span>
-                    <span>下载识别结果</span>
+                    <span style="width: 128px;">{{item.pushId}}</span>
+                    <span>{{item.pushTime}}</span>
+                    <span>{{item.pushViolationType}}</span>
+                    <span>{{item.recognitionFinal}}</span>
+                    <span @click="downloadResult(item.videoFinalPath)">下载识别结果</span>
                 </li>
             </ul>
             <div class="data-change-page-box">
-                <el-pagination small background layout="total, sizes, prev, pager, next, jumper" :total="1000" />
+                <el-pagination v-if="this.dataList.length !== 0" small background layout="total, sizes, prev, pager, next, jumper" :total="dataTotal" :v-model="pageSize" @current-change="changePage" @size-change="changeSize"/>
             </div>
         </div>
+        <transition name="fade-mask">
+            <div v-if="this.isSendToServerWorkNow" class="uploading-mask">
+                <span>上传中...</span>
+                <i class="fas fa-circle-notch fa-spin"/>
+            </div>
+        </transition>
     </div>
 </template>
 <script>
+import { recognitionViolation } from '@/util/api.js'
+import { ElMessage } from 'element-plus'
 export default {
     data(){
         return{
-            dataList:[
-                {
-                    id: 0,
-                    time: '2022-4-24',
-                    class: '安全帽',
-                    result: '无异常'
-                },
-                {
-                    id: 0,
-                    time: '2022-4-24',
-                    class: '安全帽',
-                    result: '无异常'
-                },
-                {
-                    id: 0,
-                    time: '2022-4-24',
-                    class: '安全帽',
-                    result: '无异常'
-                },
-                {
-                    id: 0,
-                    time: '2022-4-24',
-                    class: '安全帽',
-                    result: '无异常'
-                }
-            ],
+            dataList:[],
             dropdownMenu:[
                 {
                     id: 0,
                     title: '安全帽',
-                    order: 'hottest'
+                    order: 'helmet'
                 },
                 {
                     id: 1,
                     title: '着装',
-                    order: 'newest'
+                    order: 'dress'
                 },
             ],
-            choiceTitle: ''
+            fileObject: {
+                title: '',
+                file: null,
+            },
+            choiceTitle: '',
+            isSendToServerWorkNow: false,
+            pageNumber: 1,
+            pageSize: 10,
+            dataTotal: 10,
+            changePageWorkNow: false,
         }
     },
     methods:{
         handleCommand(e){
             this.choiceTitle = this.dropdownMenu[this.dropdownMenu.findIndex(item => item.order === e)].title
-        }
+        },
+        getFile(e){
+            if(e.target.files.length === 0) return
+            this.fileObject.title = e.target.files[0].name
+            this.fileObject.file = e.target.files[0]
+        },
+        distinguishButtom(){
+            if(!this.isSendToServerWorkNow){
+                this.isSendToServerWorkNow = true
+                if(this.fileObject.title === '' || this.fileObject.file === null || this.choiceTitle === ''){
+                    ElMessage({message: '填写的信息有空白，请检查！', type: 'warning'})
+                    this.isSendToServerWorkNow = false
+                    return
+                }
+                let data = new FormData()
+                data.append('recognitionType', this.choiceTitle)
+                data.append('videoPath', this.fileObject.file)
+                recognitionViolation(data).then(resq => {
+                    if(resq.code === 200){
+                        this.dataList = resq.data.list
+                        this.dataTotal = resq.data.total
+                    } else {
+                        ElMessage({message: resq.message, type: 'warning'})
+                    }
+                    this.isSendToServerWorkNow = false
+                }).catch(err => {
+                    ElMessage({message: err.message, type: 'error'})
+                    this.isSendToServerWorkNow = false
+                })
+            }
+        },
+        downloadResult(file){
+            window.open(file)
+        },
+        changePage(e){
+            this.pageNumber = e
+            this.getDataList()
+        },
+        changeSize(e){
+            this.pageSize = e
+            this.getDataList()
+        },
+        getDataList(){
+            if(this.changePageWorkNow) return
+            this.changePageWorkNow = true
+            recognitionViolation({pageNumber: this.pageNumber, pageSize: this.pageSize}).then(resq => {
+                if(resq.code === 200){
+                    this.dataList = resq.data.list
+                    this.dataTotal = resq.data.total
+                } else {
+                    ElMessage({message: resq.message, type: 'warning'})
+                }
+                this.changePageWorkNow = false
+            }).catch(err => {
+                ElMessage({message: err.message, type: 'error'})
+                this.changePageWorkNow = false
+            })
+        },
     }
 }
 </script>
@@ -100,6 +152,7 @@ export default {
 {
     width: 100%;
     height: 100%;
+    position: relative;
     .title-function
     {
         width: 100%;
@@ -161,7 +214,20 @@ export default {
                 font-size: 14px;
                 margin: 0 24px;
             }
-            
+            .click-button
+            {
+                width: 72px;
+                height: inherit;
+                background-color: rgba(71, 160, 253, 1);
+                border-radius: 4px;
+                margin-left: 32px;
+                font-size: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #ffffff;
+                cursor: pointer;
+            }
         }
         ::v-deep(.el-dropdown)
         {
@@ -248,5 +314,48 @@ export default {
             justify-content: flex-start;
         }
     }
+    .uploading-mask
+    {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0 , 0 , 0, 0.2);
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        flex-wrap: wrap;
+        span , i
+        {
+            width: 100%;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        span
+        {
+            color: #f8f8f8;
+            font-size: 16px;
+            letter-spacing: 4px;
+        }
+        i
+        {
+            color: #00A9BB;
+            font-size: 20px;
+        }
+    }
+    .fade-mask-enter-active, .fade-mask-leave-active
+    {
+        transition: opacity .5s;
+    }
+    .fade-mask-enter-from, .fade-mask-leave-to 
+    {
+        opacity: 0;
+    }
+
 }
 </style>

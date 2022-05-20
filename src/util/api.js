@@ -190,3 +190,19 @@ export const storageYardCapacity = (params) => {
         }
     })
 }
+//违规识别
+export const recognitionViolation = (query) => {
+    return request({
+        url: 'recognitionViolation',
+        method: 'post',
+        data: query,
+    })
+}
+//违规区域绘制
+export const areaRecognitionViolation = (query) => {
+    return request({
+        url: 'areaRecognitionViolation',
+        method: 'post',
+        data: query,
+    })
+}
