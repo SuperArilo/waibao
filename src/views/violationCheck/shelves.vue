@@ -121,7 +121,7 @@ export default {
             })
         },
         showImage(baseImage){
-            showImages({urls: ['data:image/png;base64,' + baseImage], index: 0, onClose: () => {}})
+            showImages({urls: [baseImage], index: 0, onClose: () => {}})
         },
         resetButton(){
             this.beforeDate = ''
