@@ -186,16 +186,18 @@ export default {
             materialBYZ: require('@/views/image/icon/materialBYZ.jpeg'),
         }
     },
-    created(){
-        this.getStatistical()
-        this.getMaterial()
-        this.getWeekStatistical()
-        this.getTotalList()
-        this.getVideosToday(1)
-        this.getEarlyWarning()
-    },
     mounted(){
-
+        if(!sessionStorage.getItem('token')){
+            ElMessage.warning('您尚未登录！')
+            this.$router.push('/login')
+        } else {
+            this.getStatistical()
+            this.getMaterial()
+            this.getWeekStatistical()
+            this.getTotalList()
+            this.getVideosToday(1)
+            this.getEarlyWarning()
+        }
     },
     methods:{
         getMaterial(){
@@ -276,7 +278,6 @@ export default {
                     this.totalList = resq.data.list
                 } else {
                     ElMessage.warning(resq.message)
-                    this.$router.push('/login')
                 }
             }).catch(err => {
                 ElMessage.error(err.message)
@@ -392,7 +393,6 @@ export default {
                         width: 48px;
                         height: 48px;
                         margin: 0 36px;
-                        background-color: aquamarine;
                         img
                         {
                             width: 100%;
@@ -435,7 +435,6 @@ export default {
                         width: 48px;
                         height: 48px;
                         margin: 0 36px;
-                        background-color: aquamarine;
                         img
                         {
                             height: 100%;
