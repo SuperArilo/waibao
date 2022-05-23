@@ -5,7 +5,7 @@
                 <span class="stack-title">优化前</span>
                 <div class="juti-content">
                     <div class="left-image">
-                        <img src=""/>
+                        <img :src="optimizationBeftore"/>
                     </div>
                     <div class="right-show-stack-data">
                         <span class="show-now-tips">已用容量: {{this.topData.beforeOptimization.before}}% / 可用容量: {{this.topData.beforeOptimization.after}}%</span>
@@ -20,7 +20,7 @@
                 <span class="stack-title">优化后</span>
                 <div class="juti-content">
                     <div class="left-image">
-                        <img src=""/>
+                        <img :src="optimizationAfter"/>
                     </div>
                     <div class="right-show-stack-data">
                         <span class="show-now-tips">已用容量: {{this.topData.afterOptimization.before}}% / 可用容量: {{this.topData.afterOptimization.after}}%</span>
@@ -93,7 +93,9 @@ export default {
             dataTotal: 10,
             searchWorkNow: false,
             changePageWorkNow: false,
-            dataList:[]
+            dataList:[],
+            optimizationBeftore: require('@/views/image/icon/optimizationBeftore.jpeg'),
+            optimizationAfter: require('@/views/image/icon/optimizationAfter.jpeg'),
         }
     },
     created(){

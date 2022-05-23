@@ -5,28 +5,36 @@
                 <span class="public-title" style="height: 18%">今日人员行为规范</span>
                 <div class="standard-content" style="height: 82%;" v-loading="this.statisticalLiist === ''">
                     <div class="standard-content-sub-item">
-                        <div class="left-image"></div>
+                        <div class="left-image">
+                            <img :src="totayToday"/>
+                        </div>
                         <div class="right-span-content">
                             <span>{{this.statisticalLiist.total}}次</span>
                             <span>总计</span>
                         </div>
                     </div>
                     <div class="standard-content-sub-item">
-                        <div class="left-image"></div>
+                        <div class="left-image">
+                            <img :src="dangerLocation"/>
+                        </div>
                         <div class="right-span-content">
                             <span>{{this.statisticalLiist.dangerZone}}次</span>
                             <span>进入危险区域</span>
                         </div>
                     </div>
                     <div class="standard-content-sub-item">
-                        <div class="left-image"></div>
+                        <div class="left-image">
+                            <img :src="hatTotal"/>
+                        </div>
                         <div class="right-span-content">
                             <span>{{this.statisticalLiist.helmetViolation}}次</span>
                             <span>安全帽违规</span>
                         </div>
                     </div>
                     <div class="standard-content-sub-item">
-                        <div class="left-image"></div>
+                        <div class="left-image">
+                            <img :src="clothesTotal"/>
+                        </div>
                         <div class="right-span-content">
                             <span>{{this.statisticalLiist.dressViolation}}次</span>
                             <span>着装违规</span>
@@ -39,7 +47,7 @@
                 <div class="material-content" style="height: 72%" v-loading="this.materialList === ''">
                     <div class="material-sub-item">
                         <div class="left-image">
-                            <img src=""/>
+                            <img :src="materialTotal"/>
                         </div>
                         <div class="right-span-content">
                             <span>{{this.materialList.total}}次</span>
@@ -48,7 +56,7 @@
                     </div>
                     <div class="material-sub-item">
                         <div class="left-image">
-                            <img src=""/>
+                            <img :src="materialBYZ"/>
                         </div>
                         <div class="right-span-content">
                             <span>{{this.materialList.InventoryInconsistency}}次</span>
@@ -169,7 +177,13 @@ export default {
             ],
             totalList: '',
             //预警结果
-            earlyWarningList:[]
+            earlyWarningList:[],
+            totayToday: require('@/views/image/icon/todayTotal.jpeg'),
+            dangerLocation: require('@/views/image/icon/dangerLocation.jpeg'),
+            hatTotal: require('@/views/image/icon/hatTotal.jpeg'),
+            clothesTotal: require('@/views/image/icon/clothesTotal.jpeg'),
+            materialTotal: require('@/views/image/icon/materialTotal.jpeg'),
+            materialBYZ: require('@/views/image/icon/materialBYZ.jpeg'),
         }
     },
     created(){
@@ -262,6 +276,7 @@ export default {
                     this.totalList = resq.data.list
                 } else {
                     ElMessage.warning(resq.message)
+                    this.$router.push('/login')
                 }
             }).catch(err => {
                 ElMessage.error(err.message)
