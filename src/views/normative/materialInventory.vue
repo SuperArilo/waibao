@@ -59,29 +59,7 @@ import { ElMessage } from 'element-plus'
 export default {
     data(){
         return{
-            dataList:[
-                {
-                    id: 0,
-                    time: '2022-5-20 15:14',
-                    location: '大仓',
-                    area: 'A1',
-                    now: '未戴安全帽'
-                },
-                {
-                    id: 1,
-                    time: '2022-5-20 15:14',
-                    location: '小仓',
-                    area: 'A2',
-                    now: '着装不规范'
-                },
-                {
-                    id: 3,
-                    time: '2022-5-20 15:14',
-                    location: '外仓',
-                    area: 'A24',
-                    now: '未戴安全帽'
-                }
-            ],
+            dataList:[],
             dropdownMenu:[
                 {
                     id: 0,
