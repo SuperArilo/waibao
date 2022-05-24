@@ -63,6 +63,11 @@ const routes = [
                 path: 'areaidentification',
                 component: () => import('@/views/normative/areaIdentification.vue')
             },
+            //物料盘点
+            {
+                path: 'materialInventory',
+                component: () => import('@/views/normative/materialInventory.vue')
+            },
             //匹配违规路由
             {
                 path: '/:pathMatch(.*)',

@@ -89,7 +89,7 @@ export default {
                         },
                         {
                             id: 4,
-                            title: '盘点异常查询',
+                            title: '常规盘点查询',
                             path: 'saycheck'
                         }
                     ],
@@ -109,6 +109,11 @@ export default {
                             id: 1,
                             title: '区域检测违规识别',
                             path: 'areaidentification'
+                        },
+                        {
+                            id: 2,
+                            title: '物料盘点',
+                            path: 'materialInventory'
                         }
                     ]
                 },

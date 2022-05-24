@@ -30,10 +30,10 @@
             </div>
             <div class="data-show-list-title">
                 <span style="width: 128px">序号</span>
-                <span>监测异常时间</span>
+                <span>时间</span>
                 <span>仓库</span>
                 <span>仓位</span>
-                <span>异常情况</span>
+                <span>详情</span>
             </div>
             <ul class="data-show-list" v-loading="(this.searchWorkNow === true && this.dataList.length === 0) || (this.changePageWorkNow === true)">
                 <li v-for="item in dataList" :key="item.id">
